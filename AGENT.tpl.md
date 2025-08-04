@@ -1,5 +1,4 @@
 # AmpCode Configuration
-<!-- {{REPO_PATH}} will be replaced with actual path during generation -->
 
 ## Documentation
 
@@ -36,4 +35,3 @@
 - Never push unless specifically requested
 - Stage changes and show diff before committing
 - Keep commits atomic and focused
-

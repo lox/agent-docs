@@ -1,5 +1,4 @@
 # Claude Code Configuration
-<!-- {{REPO_PATH}} will be replaced with actual path during generation -->
 
 ## Commands
 
@@ -10,17 +9,12 @@ Slash commands in `~/.claude/commands/` - Type `/` to see all available
 ### Claude Specific
 
 - `@{{REPO_PATH}}/docs/claude-command-guide.md` - Creating custom Claude commands
-- `@{{REPO_PATH}}/docs/mcp-sync-documentation.md` - MCP config sync
 
 ### Language Best Practices
 
 - `@{{REPO_PATH}}/docs/bash-best-practices.md` - Bash scripting (3.2 compatible)
 - `@{{REPO_PATH}}/docs/yaml-best-practices.md` - YAML formatting and structure
 - `@{{REPO_PATH}}/docs/go-best-practices.md` - Go development patterns
-
-### MCP Development
-
-- `@{{REPO_PATH}}/docs/mcp-best-practices.md` - MCP server development
 
 ## Feedback Style
 
