@@ -31,6 +31,7 @@ fi
 # 2. Create CLAUDE.md from template
 echo -e "\n${GREEN}Setting up CLAUDE.md...${NC}"
 CLAUDE_MD="$HOME/.claude/CLAUDE.md"
+mkdir -p "$(dirname "$CLAUDE_MD")"
 
 if [ -f "$SCRIPT_DIR/CLAUDE.tpl.md" ]; then
   # Process template - replace {{REPO_PATH}} with actual path
