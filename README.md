@@ -28,6 +28,10 @@ Type `/` in Claude Code to see available commands.
 - `CLAUDE.tpl.md` - Claude config template
 - `AGENT.tpl.md` - Global AI config template
 
+## Inspiration
+
+- https://www.dzombak.com/blog/2025/08/getting-good-results-from-claude-code/
+
 ## License
 
 MIT

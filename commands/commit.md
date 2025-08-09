@@ -22,6 +22,8 @@ Create well-formatted commits with conventional commit messages (only feat, fix 
 
 ## Process
 
+If you have the `precommit` tool available, use it! Otherwise:
+
 1. Check for staged changes (`git status`)
 2. If no staged changes, review and stage appropriate files
 3. Run pre-commit checks (unless --no-verify)
