@@ -84,9 +84,17 @@ git bisect good <known-good-commit>
 # Bash scripts
 set -x  # Enable trace
 set +x  # Disable trace
+```
 
-# Add strategic logging
-echo "DEBUG: variable=$variable" >&2
+```go
+// Add strategic logging
+log.Printf("DEBUG: processing user=%v", user)
+
+// Use debug build tags
+// +build debug
+func debugLog(format string, args ...interface{}) {
+    log.Printf("[DEBUG] "+format, args...)
+}
 ```
 
 ### Isolate Components

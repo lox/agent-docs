@@ -147,12 +147,19 @@ We will use JWT tokens with RS256 signing.
 
 ### Using TodoWrite Tool
 Maintain task lists for current work:
-```python
-todos = [
-    {"id": "1", "content": "Review existing auth code", "status": "completed"},
-    {"id": "2", "content": "Design database schema", "status": "in_progress"},
-    {"id": "3", "content": "Implement User model", "status": "pending"},
-]
+```go
+// Track in code comments or use a task struct
+type Task struct {
+    ID      string
+    Content string
+    Status  string // "completed", "in_progress", "pending"
+}
+
+tasks := []Task{
+    {ID: "1", Content: "Review existing auth code", Status: "completed"},
+    {ID: "2", Content: "Design database schema", Status: "in_progress"},
+    {ID: "3", Content: "Implement User model", Status: "pending"},
+}
 ```
 
 ### Status Indicators

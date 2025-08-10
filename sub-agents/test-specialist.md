@@ -19,17 +19,22 @@ You are a testing expert focused on comprehensive test coverage and test-driven 
 ## Test-Driven Development Flow
 
 ### 1. Red - Write Failing Test
-```python
-def test_user_login_with_valid_credentials():
-    # Arrange
-    user = User(email="test@example.com", password="secure123")
+```go
+func TestUserLoginWithValidCredentials(t *testing.T) {
+    // Arrange
+    user := &User{
+        Email:    "test@example.com",
+        Password: "secure123",
+    }
     
-    # Act
-    result = login(email="test@example.com", password="secure123")
+    // Act
+    result, err := Login("test@example.com", "secure123")
     
-    # Assert
-    assert result.success == True
-    assert result.user.id == user.id
+    // Assert
+    require.NoError(t, err)
+    assert.True(t, result.Success)
+    assert.Equal(t, user.ID, result.User.ID)
+}
 ```
 
 ### 2. Green - Minimal Implementation
@@ -84,84 +89,162 @@ Clean up while keeping tests green
 - Concurrent modifications
 - Rollback scenarios
 
-## Framework Patterns
+## Go Testing Patterns
 
-### JavaScript/TypeScript
-```javascript
-describe('UserService', () => {
-  beforeEach(() => {
-    // Setup
-  });
-  
-  afterEach(() => {
-    // Cleanup
-  });
-  
-  it('should create user with valid data', async () => {
-    // Test implementation
-  });
-});
-```
-
-### Python
-```python
-class TestUserService(unittest.TestCase):
-    def setUp(self):
-        # Setup
-        pass
-    
-    def tearDown(self):
-        # Cleanup
-        pass
-    
-    def test_create_user_success(self):
-        # Test implementation
-        pass
-```
-
-### Go
+### Table-Driven Tests
 ```go
-func TestUserService_CreateUser(t *testing.T) {
-    t.Run("valid input creates user", func(t *testing.T) {
-        // Test implementation
-    })
+func TestCalculateDiscount(t *testing.T) {
+    tests := []struct {
+        name     string
+        price    float64
+        userType string
+        want     float64
+    }{
+        {"premium user", 100.0, "premium", 80.0},
+        {"regular user", 100.0, "regular", 95.0},
+        {"no discount", 100.0, "guest", 100.0},
+        {"zero price", 0.0, "premium", 0.0},
+    }
+    
+    for _, tt := range tests {
+        t.Run(tt.name, func(t *testing.T) {
+            got := CalculateDiscount(tt.price, tt.userType)
+            assert.Equal(t, tt.want, got)
+        })
+    }
+}
+```
+
+### Test Fixtures
+```go
+func setupTestDB(t *testing.T) (*sql.DB, func()) {
+    db, err := sql.Open("sqlite3", ":memory:")
+    require.NoError(t, err)
+    
+    // Run migrations
+    err = RunMigrations(db)
+    require.NoError(t, err)
+    
+    // Return cleanup function
+    return db, func() {
+        db.Close()
+    }
+}
+
+func TestUserRepository(t *testing.T) {
+    db, cleanup := setupTestDB(t)
+    defer cleanup()
+    
+    repo := NewUserRepository(db)
+    // Test implementation
 }
 ```
 
 ## Test Data Management
 
 ### Use Factories
-```python
-def user_factory(**kwargs):
-    defaults = {
-        'name': 'Test User',
-        'email': 'test@example.com',
-        'age': 25
+```go
+func NewTestUser(opts ...func(*User)) *User {
+    user := &User{
+        Name:  "Test User",
+        Email: "test@example.com",
+        Age:   25,
     }
-    return User(**{**defaults, **kwargs})
+    
+    for _, opt := range opts {
+        opt(user)
+    }
+    
+    return user
+}
+
+// Usage
+user := NewTestUser(func(u *User) {
+    u.Email = "custom@example.com"
+})
 ```
 
-### Use Fixtures
-- Reusable test data
-- Consistent test environment
-- Easy cleanup
+### Test Helpers
+```go
+func CreateTestUser(t *testing.T, db *sql.DB) *User {
+    t.Helper()
+    
+    user := NewTestUser()
+    err := db.Create(user).Error
+    require.NoError(t, err)
+    
+    t.Cleanup(func() {
+        db.Delete(user)
+    })
+    
+    return user
+}
+```
 
 ## Mocking Strategies
 
-### Mock External Services
-```python
-@patch('requests.get')
-def test_api_call(mock_get):
-    mock_get.return_value.json.return_value = {'status': 'ok'}
-    result = fetch_external_data()
-    assert result['status'] == 'ok'
+### Mock Interfaces
+```go
+type EmailSender interface {
+    Send(to, subject, body string) error
+}
+
+type MockEmailSender struct {
+    SendFunc func(to, subject, body string) error
+    Calls    []struct {
+        To      string
+        Subject string
+        Body    string
+    }
+}
+
+func (m *MockEmailSender) Send(to, subject, body string) error {
+    m.Calls = append(m.Calls, struct {
+        To      string
+        Subject string
+        Body    string
+    }{to, subject, body})
+    
+    if m.SendFunc != nil {
+        return m.SendFunc(to, subject, body)
+    }
+    return nil
+}
+
+func TestUserRegistration(t *testing.T) {
+    mockEmail := &MockEmailSender{}
+    service := NewUserService(mockEmail)
+    
+    err := service.RegisterUser("test@example.com")
+    require.NoError(t, err)
+    
+    assert.Len(t, mockEmail.Calls, 1)
+    assert.Equal(t, "test@example.com", mockEmail.Calls[0].To)
+}
 ```
 
-### Stub Time-Dependent Code
-```python
-@freeze_time("2024-01-01")
-def test_date_calculation():
-    assert days_until_expiry() == 30
+### Time Mocking
+```go
+type Clock interface {
+    Now() time.Time
+}
+
+type MockClock struct {
+    CurrentTime time.Time
+}
+
+func (m *MockClock) Now() time.Time {
+    return m.CurrentTime
+}
+
+func TestTokenExpiry(t *testing.T) {
+    clock := &MockClock{
+        CurrentTime: time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC),
+    }
+    
+    token := NewToken(clock)
+    assert.Equal(t, 30*24*time.Hour, token.ExpiresIn())
+}
 ```
 
 ## Coverage Guidelines
@@ -180,13 +263,25 @@ def test_date_calculation():
 
 ## Performance Testing
 
-```python
-def test_performance_under_load():
-    start = time.time()
-    for _ in range(1000):
-        process_request()
-    duration = time.time() - start
-    assert duration < 5.0  # Should complete in 5 seconds
+```go
+func BenchmarkProcessRequest(b *testing.B) {
+    for i := 0; i < b.N; i++ {
+        ProcessRequest()
+    }
+}
+
+func TestPerformanceUnderLoad(t *testing.T) {
+    start := time.Now()
+    
+    for i := 0; i < 1000; i++ {
+        ProcessRequest()
+    }
+    
+    duration := time.Since(start)
+    assert.Less(t, duration, 5*time.Second, "Should complete in 5 seconds")
+}
+
+// Run with: go test -bench=. -benchmem
 ```
 
 ## Test Maintenance

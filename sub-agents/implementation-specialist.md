@@ -60,150 +60,229 @@ Break work into stages:
 - Descriptive names
 - Early returns for clarity
 
-```python
-# Good
-def calculate_discount(price, customer_type):
-    if customer_type == 'premium':
+```go
+// Good
+func calculateDiscount(price float64, customerType string) float64 {
+    switch customerType {
+    case "premium":
         return price * 0.8
-    if customer_type == 'regular':
+    case "regular":
         return price * 0.95
-    return price
+    default:
+        return price
+    }
+}
 
-# Bad - doing too much
-def process_order_and_send_email_and_update_inventory(order):
-    # 100 lines of mixed concerns
+// Bad - doing too much
+func processOrderAndSendEmailAndUpdateInventory(order *Order) error {
+    // 100 lines of mixed concerns
+}
 ```
 
 ### Variable Naming
-```python
-# Good
-user_count = len(users)
-is_valid = validate_input(data)
-max_retry_attempts = 3
+```go
+// Good
+userCount := len(users)
+isValid := validateInput(data)
+maxRetryAttempts := 3
 
-# Bad
-n = len(u)
-flag = check(d)
-x = 3
+// Bad
+n := len(u)
+flag := check(d)
+x := 3
 ```
 
 ### Error Handling
-```python
-# Be specific about errors
-try:
-    result = process_data(input)
-except ValidationError as e:
-    logger.error(f"Invalid input: {e}")
-    raise
-except ConnectionError as e:
-    logger.warning(f"Network issue, retrying: {e}")
-    return retry_with_backoff()
+```go
+// Be specific about errors
+result, err := processData(input)
+if err != nil {
+    switch {
+    case errors.Is(err, ErrValidation):
+        log.Printf("Invalid input: %v", err)
+        return nil, fmt.Errorf("validation failed: %w", err)
+    case errors.Is(err, ErrConnection):
+        log.Printf("Network issue, retrying: %v", err)
+        return retryWithBackoff()
+    default:
+        return nil, fmt.Errorf("unexpected error: %w", err)
+    }
+}
 ```
 
 ## Refactoring Patterns
 
 ### Extract Method
 Before:
-```python
-def process_user(user):
-    # Validate email
-    if not '@' in user.email:
-        raise ValueError("Invalid email")
-    if len(user.email) > 255:
-        raise ValueError("Email too long")
-    # ... more code
+```go
+func processUser(user *User) error {
+    // Validate email
+    if !strings.Contains(user.Email, "@") {
+        return errors.New("invalid email")
+    }
+    if len(user.Email) > 255 {
+        return errors.New("email too long")
+    }
+    // ... more code
+}
 ```
 
 After:
-```python
-def validate_email(email):
-    if not '@' in email:
-        raise ValueError("Invalid email")
-    if len(email) > 255:
-        raise ValueError("Email too long")
+```go
+func validateEmail(email string) error {
+    if !strings.Contains(email, "@") {
+        return errors.New("invalid email")
+    }
+    if len(email) > 255 {
+        return errors.New("email too long")
+    }
+    return nil
+}
 
-def process_user(user):
-    validate_email(user.email)
-    # ... more code
+func processUser(user *User) error {
+    if err := validateEmail(user.Email); err != nil {
+        return fmt.Errorf("user validation: %w", err)
+    }
+    // ... more code
+}
 ```
 
-### Replace Conditional with Polymorphism
+### Replace Conditional with Strategy Pattern
 Before:
-```python
-def calculate_price(item_type, base_price):
-    if item_type == 'book':
-        return base_price * 0.9
-    elif item_type == 'electronic':
-        return base_price * 1.2
-    elif item_type == 'food':
-        return base_price * 1.1
+```go
+func calculatePrice(itemType string, basePrice float64) float64 {
+    switch itemType {
+    case "book":
+        return basePrice * 0.9
+    case "electronic":
+        return basePrice * 1.2
+    case "food":
+        return basePrice * 1.1
+    default:
+        return basePrice
+    }
+}
 ```
 
 After:
-```python
-class PricingStrategy:
-    def calculate(self, base_price):
-        return base_price
+```go
+type PricingStrategy interface {
+    Calculate(basePrice float64) float64
+}
 
-class BookPricing(PricingStrategy):
-    def calculate(self, base_price):
-        return base_price * 0.9
+type BookPricing struct{}
+func (b BookPricing) Calculate(basePrice float64) float64 {
+    return basePrice * 0.9
+}
 
-# Use strategy pattern
-pricing = pricing_strategies[item_type]
-final_price = pricing.calculate(base_price)
+type ElectronicPricing struct{}
+func (e ElectronicPricing) Calculate(basePrice float64) float64 {
+    return basePrice * 1.2
+}
+
+// Use strategy pattern
+strategies := map[string]PricingStrategy{
+    "book":       BookPricing{},
+    "electronic": ElectronicPricing{},
+}
+
+strategy := strategies[itemType]
+finalPrice := strategy.Calculate(basePrice)
 ```
 
 ## Architecture Patterns
 
 ### Dependency Injection
-```python
-# Good - dependencies are explicit
-class UserService:
-    def __init__(self, db, emailer):
-        self.db = db
-        self.emailer = emailer
-    
-    def create_user(self, data):
-        user = self.db.save(data)
-        self.emailer.send_welcome(user)
-        return user
+```go
+// Good - dependencies are explicit
+type UserService struct {
+    db      Database
+    emailer Emailer
+}
 
-# Bad - hidden dependencies
-class UserService:
-    def create_user(self, data):
-        db = Database()  # Hidden dependency
-        emailer = Emailer()  # Hidden dependency
+func NewUserService(db Database, emailer Emailer) *UserService {
+    return &UserService{
+        db:      db,
+        emailer: emailer,
+    }
+}
+
+func (s *UserService) CreateUser(data *UserData) (*User, error) {
+    user, err := s.db.Save(data)
+    if err != nil {
+        return nil, err
+    }
+    
+    if err := s.emailer.SendWelcome(user); err != nil {
+        // Log but don't fail user creation
+        log.Printf("failed to send welcome email: %v", err)
+    }
+    
+    return user, nil
+}
+
+// Bad - hidden dependencies
+func CreateUser(data *UserData) (*User, error) {
+    db := NewDatabase()      // Hidden dependency
+    emailer := NewEmailer()  // Hidden dependency
+    // ...
+}
 ```
 
 ### Interface Segregation
-```python
-# Good - focused interfaces
-class Readable:
-    def read(self): pass
+```go
+// Good - focused interfaces
+type Reader interface {
+    Read() ([]byte, error)
+}
 
-class Writable:
-    def write(self, data): pass
+type Writer interface {
+    Write(data []byte) error
+}
 
-class FileHandler(Readable, Writable):
-    def read(self): pass
-    def write(self, data): pass
+// Compose interfaces
+type ReadWriter interface {
+    Reader
+    Writer
+}
 
-# Bad - fat interface
-class Storage:
-    def read(self): pass
-    def write(self): pass
-    def delete(self): pass
-    def compress(self): pass
-    def encrypt(self): pass
+type FileHandler struct{}
+
+func (f *FileHandler) Read() ([]byte, error) {
+    // Implementation
+}
+
+func (f *FileHandler) Write(data []byte) error {
+    // Implementation
+}
+
+// Bad - fat interface
+type Storage interface {
+    Read() ([]byte, error)
+    Write(data []byte) error
+    Delete() error
+    Compress() error
+    Encrypt() error
+}
 ```
 
 ## Performance Considerations
 
 ### Profile First
-```python
-import cProfile
-cProfile.run('expensive_function()')
+```go
+// CPU profiling
+import _ "net/http/pprof"
+
+// In main():
+go func() {
+    log.Println(http.ListenAndServe("localhost:6060", nil))
+}()
+
+// Run: go tool pprof http://localhost:6060/debug/pprof/profile
+
+// Or use benchmarks:
+// go test -bench=. -cpuprofile=cpu.prof
+// go tool pprof cpu.prof
 ```
 
 ### Common Optimizations
