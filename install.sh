@@ -32,7 +32,24 @@ else
   log_warn "Commands directory not found"
 fi
 
-# 2. Create configuration files from template
+# 2. Install sub-agents
+log_info "\nInstalling sub-agents..."
+CLAUDE_SUBAGENTS_DIR="$HOME/.claude/sub-agents"
+
+if [ -d "$SCRIPT_DIR/sub-agents" ]; then
+  # Remove existing sub-agents directory if it exists
+  [ -d "$CLAUDE_SUBAGENTS_DIR" ] && rm -rf "$CLAUDE_SUBAGENTS_DIR"
+  
+  # Create symlink to our sub-agents directory
+  ln -s "$SCRIPT_DIR/sub-agents" "$CLAUDE_SUBAGENTS_DIR"
+  
+  count=$(find "$CLAUDE_SUBAGENTS_DIR" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+  log_success "Linked $count sub-agents (auto-updating)"
+else
+  log_warn "Sub-agents directory not found"
+fi
+
+# 3. Create configuration files from template
 log_info "\nSetting up configuration files..."
 mkdir -p "$HOME/.config"
 
@@ -44,7 +61,7 @@ echo "$template_content" > "$HOME/.claude/CLAUDE.md"
 echo "$template_content" > "$HOME/.config/AGENT.md"
 log_success "Created CLAUDE.md and AGENT.md"
 
-# 3. Optional: Install settings
+# 4. Optional: Install settings
 log_info "\nSettings configuration..."
 SETTINGS_FILE="$HOME/.claude/settings.json"
 REPO_SETTINGS="$SCRIPT_DIR/settings/claude.json"
@@ -60,7 +77,7 @@ elif [ -f "$REPO_SETTINGS" ]; then
   [[ $REPLY =~ ^[Yy]$ ]] && { ln -s "$REPO_SETTINGS" "$SETTINGS_FILE"; log_success "Linked settings"; }
 fi
 
-# 4. Set up global .gitignore
+# 5. Set up global .gitignore
 log_info "\nConfiguring global .gitignore..."
 GLOBAL_GITIGNORE="$HOME/.gitignore"
 touch "$GLOBAL_GITIGNORE"
@@ -76,6 +93,7 @@ log_success "Updated global .gitignore"
 # Done
 echo -e "\n${GREEN}✅ Installation complete!${NC}"
 echo -e "\nCommands: ${BLUE}~/.claude/commands/${NC}"
+echo -e "Sub-agents: ${BLUE}~/.claude/sub-agents/${NC}"
 echo -e "Claude: ${BLUE}~/.claude/CLAUDE.md${NC}"
 echo -e "AmpCode: ${BLUE}~/.config/AGENT.md${NC}"
 echo -e "\nType ${BLUE}/${NC} in Claude Code to see available commands"

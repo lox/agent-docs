@@ -31,6 +31,7 @@ Type `/` in Claude Code to see available commands.
 ## Inspiration
 
 - https://www.dzombak.com/blog/2025/08/getting-good-results-from-claude-code/
+- https://research.trychroma.com/context-rot
 
 ## License
 
