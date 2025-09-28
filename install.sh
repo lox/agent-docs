@@ -62,7 +62,47 @@ elif [ -f "$REPO_SETTINGS" ]; then
   [[ $REPLY =~ ^[Yy]$ ]] && { ln -s "$REPO_SETTINGS" "$SETTINGS_FILE"; log_success "Linked settings"; }
 fi
 
-# 4. Set up global .gitignore
+# 4. Install shell hooks
+log_info "\nSetting up shell hooks..."
+HOOKS_SOURCE="source $SCRIPT_DIR/hooks/agents.zsh"
+
+# Detect shell and configuration file
+if [ -n "$ZSH_VERSION" ] || [ "$SHELL" = "/bin/zsh" ] || [ "$SHELL" = "/usr/bin/zsh" ]; then
+  SHELL_CONFIG="$HOME/.zshrc"
+  SHELL_NAME="zsh"
+elif [ -n "$BASH_VERSION" ] || [ "$SHELL" = "/bin/bash" ] || [ "$SHELL" = "/usr/bin/bash" ]; then
+  SHELL_CONFIG="$HOME/.bashrc"
+  SHELL_NAME="bash"
+  log_warn "Note: Shell hooks are optimized for zsh. Some features may not work in bash."
+else
+  SHELL_CONFIG=""
+  SHELL_NAME="unknown"
+fi
+
+if [ -n "$SHELL_CONFIG" ] && [ -f "$SHELL_CONFIG" ]; then
+  # Check if hooks are already installed
+  if grep -q "$SCRIPT_DIR/hooks/agents" "$SHELL_CONFIG" 2>/dev/null; then
+    echo "Shell hooks already installed in $SHELL_CONFIG"
+  else
+    read -p "Add agent hooks to $SHELL_CONFIG? (y/N) " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+      echo "" >> "$SHELL_CONFIG"
+      echo "# Agent CLI hooks" >> "$SHELL_CONFIG"
+      echo "$HOOKS_SOURCE" >> "$SHELL_CONFIG"
+      log_success "Added hooks to $SHELL_CONFIG (restart shell or run: source $SHELL_CONFIG)"
+    else
+      log_warn "Skipped shell hooks. To install manually, add to your shell config:"
+      echo "  $HOOKS_SOURCE"
+    fi
+  fi
+else
+  log_warn "Could not detect shell configuration file."
+  log_warn "To use shell hooks, add this line to your shell config:"
+  echo "  $HOOKS_SOURCE"
+fi
+
+# 5. Set up global .gitignore
 log_info "\nConfiguring global .gitignore..."
 GLOBAL_GITIGNORE="$HOME/.gitignore"
 touch "$GLOBAL_GITIGNORE"
@@ -82,3 +122,7 @@ echo -e "Claude: ${BLUE}~/.claude/CLAUDE.md${NC}"
 echo -e "AmpCode: ${BLUE}~/.config/AGENTS.md${NC}"
 echo -e "Codex: ${BLUE}~/.codex/AGENTS.md${NC}"
 echo -e "\nType ${BLUE}/${NC} in Claude Code to see available commands"
+echo -e "\nShell commands (after restart or source):"
+echo -e "  ${BLUE}claude${NC} - Run Claude Code CLI"
+echo -e "  ${BLUE}cdx${NC} - Run Codex CLI"
+echo -e "  ${BLUE}agent-help${NC} - Show all agent commands"
