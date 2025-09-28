@@ -1,17 +1,17 @@
 #!/usr/bin/env zsh
-# Agent CLI hooks - Source this file in your shell config
+# Agent CLI shell integration - Source this file in your shell config
 
 # Get the directory of this script
-AGENT_HOOKS_DIR="${0:A:h}"
+AGENT_SHELL_DIR="${0:A:h}"
 
-# Source individual agent hooks
-[[ -f "$AGENT_HOOKS_DIR/claude.zsh" ]] && source "$AGENT_HOOKS_DIR/claude.zsh"
-[[ -f "$AGENT_HOOKS_DIR/codex.zsh" ]] && source "$AGENT_HOOKS_DIR/codex.zsh"
+# Source individual agent shell scripts
+[[ -f "$AGENT_SHELL_DIR/claude.zsh" ]] && source "$AGENT_SHELL_DIR/claude.zsh"
+[[ -f "$AGENT_SHELL_DIR/codex.zsh" ]] && source "$AGENT_SHELL_DIR/codex.zsh"
 
 # Additional helper functions
 agent-update() {
   echo "Updating agent configurations..."
-  cd "$AGENT_HOOKS_DIR/.." && git pull && ./install.sh
+  cd "$AGENT_SHELL_DIR/.." && git pull && ./install.sh
   echo "Agent configurations updated."
 }
 

@@ -64,7 +64,7 @@ fi
 
 # 4. Install shell hooks
 log_info "\nSetting up shell hooks..."
-HOOKS_SOURCE="source $SCRIPT_DIR/hooks/agents.zsh"
+HOOKS_SOURCE="source $SCRIPT_DIR/shell/agents.zsh"
 
 # Detect shell and configuration file
 if [ -n "$ZSH_VERSION" ] || [ "$SHELL" = "/bin/zsh" ] || [ "$SHELL" = "/usr/bin/zsh" ]; then
@@ -81,7 +81,7 @@ fi
 
 if [ -n "$SHELL_CONFIG" ] && [ -f "$SHELL_CONFIG" ]; then
   # Check if hooks are already installed
-  if grep -q "$SCRIPT_DIR/hooks/agents" "$SHELL_CONFIG" 2>/dev/null; then
+  if grep -q "$SCRIPT_DIR/shell/agents" "$SHELL_CONFIG" 2>/dev/null; then
     echo "Shell hooks already installed in $SHELL_CONFIG"
   else
     read -p "Add agent hooks to $SHELL_CONFIG? (y/N) " -n 1 -r

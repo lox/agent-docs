@@ -37,7 +37,7 @@ After installation and shell restart:
 
 - `commands/` - Slash commands for Claude Code
 - `docs/` - Reference documentation and best practices
-- `hooks/` - Shell integration scripts
+- `shell/` - Shell integration scripts
 - `settings/` - Configuration files
 - `AGENTS.tpl.md` - Global AI configuration template
 
