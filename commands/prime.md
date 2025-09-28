@@ -5,7 +5,7 @@ Prime Agent with comprehensive project understanding.
 ## Standard Context Loading
 
 1. Read README.md for project overview
-2. Read CLAUDE.md or AGENT.md for AI-specific instructions
+2. Read CLAUDE.md or AGENTS.md for AI-specific instructions
 3. List project files excluding ignored paths
 4. Review key configuration files
 5. Understand project structure and conventions

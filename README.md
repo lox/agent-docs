@@ -12,7 +12,8 @@ This installs:
 
 - Slash commands to `~/.claude/commands/`
 - Claude memory to `~/.claude/CLAUDE.md`
-- AmpCode config to `~/.config/AGENT.md`
+- AmpCode config to `~/.config/AGENTS.md`
+- Codex config to `~/.codex/AGENTS.md`
 - Settings symlink to `~/.claude/settings.json`
 - Global gitignore for project specific files
 
@@ -26,7 +27,7 @@ Type `/` in Claude Code to see available commands.
 - `docs/` - Reference documentation
 - `settings/` - Configuration files
 - `CLAUDE.tpl.md` - Claude config template
-- `AGENT.tpl.md` - Global AI config template
+- `AGENTS.tpl.md` - Global AI config template
 
 ## Inspiration
 

@@ -35,14 +35,16 @@ fi
 # 2. Create configuration files from template
 log_info "\nSetting up configuration files..."
 mkdir -p "$HOME/.config"
+mkdir -p "$HOME/.codex"
 
-[ -f "$SCRIPT_DIR/AGENT.tpl.md" ] || { log_error "Error: AGENT.tpl.md not found"; exit 1; }
+[ -f "$SCRIPT_DIR/AGENTS.tpl.md" ] || { log_error "Error: AGENTS.tpl.md not found"; exit 1; }
 
-# Process template once, output to both files
-template_content=$(sed "s|{{REPO_PATH}}|$SCRIPT_DIR|g" "$SCRIPT_DIR/AGENT.tpl.md")
+# Process template once, output to all files
+template_content=$(sed "s|{{REPO_PATH}}|$SCRIPT_DIR|g" "$SCRIPT_DIR/AGENTS.tpl.md")
 echo "$template_content" > "$HOME/.claude/CLAUDE.md"
-echo "$template_content" > "$HOME/.config/AGENT.md"
-log_success "Created CLAUDE.md and AGENT.md"
+echo "$template_content" > "$HOME/.config/AGENTS.md"
+echo "$template_content" > "$HOME/.codex/AGENTS.md"
+log_success "Created CLAUDE.md and AGENTS.md in multiple locations"
 
 # 3. Optional: Install settings
 log_info "\nSettings configuration..."
@@ -68,7 +70,7 @@ touch "$GLOBAL_GITIGNORE"
 git config --global core.excludesfile "$GLOBAL_GITIGNORE" 2>/dev/null || log_warn "Warning: Could not configure git global excludesfile"
 
 # Add patterns if they don't exist
-for pattern in "/CLAUDE.md" "/AGENT.md" "/.claude/"; do
+for pattern in "/CLAUDE.md" "/AGENTS.md" "/.claude/" "/.codex/"; do
   grep -q "^${pattern}$" "$GLOBAL_GITIGNORE" 2>/dev/null || echo "$pattern" >>"$GLOBAL_GITIGNORE"
 done
 log_success "Updated global .gitignore"
@@ -77,5 +79,6 @@ log_success "Updated global .gitignore"
 echo -e "\n${GREEN}✅ Installation complete!${NC}"
 echo -e "\nCommands: ${BLUE}~/.claude/commands/${NC}"
 echo -e "Claude: ${BLUE}~/.claude/CLAUDE.md${NC}"
-echo -e "AmpCode: ${BLUE}~/.config/AGENT.md${NC}"
+echo -e "AmpCode: ${BLUE}~/.config/AGENTS.md${NC}"
+echo -e "Codex: ${BLUE}~/.codex/AGENTS.md${NC}"
 echo -e "\nType ${BLUE}/${NC} in Claude Code to see available commands"
