@@ -9,18 +9,16 @@ cdx() {
   fi
 }
 
-# Development aliases (optional - uncomment if working on codex)
-# alias codex-dev="/Users/lachlan/Projects/lox/codex/codex-rs/target/release/codex-exec"
-# alias cdx-dev="/Users/lachlan/Projects/lox/codex/codex-rs/target/release/codex-exec"
+# Development aliases (for development of codex)
+alias codex-dev="/Users/lachlan/Projects/lox/codex/codex-rs/target/release/codex"
+alias cdx-dev="/Users/lachlan/Projects/lox/codex/codex-rs/target/release/codex"
 
-# MCP server setup functions (optional - uncomment if using MCP)
-# codex-mcp-dev-setup() {
-#   claude mcp add codex-dev \
-#     /Users/lachlan/Projects/lox/codex/codex-rs/target/release/codex-mcp-server
-#   echo "Development Codex MCP server configured. Restart Claude to use it."
-# }
-#
-# codex-mcp-dev-remove() {
-#   claude mcp remove codex-dev
-#   echo "Development Codex MCP server removed."
-# }
+codex-mcp-dev-setup() {
+  claude mcp add -s user codex-dev \
+    /Users/lachlan/Projects/lox/codex/codex-rs/target/release/codex-mcp-server
+}
+
+codex-mcp-dev-remove() {
+  claude mcp remove codex-dev
+  echo "Development Codex MCP server removed."
+}
