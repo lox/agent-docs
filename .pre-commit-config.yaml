@@ -1,0 +1,15 @@
+repos:
+  - repo: local
+    hooks:
+      - id: shfmt
+        name: shfmt
+        entry: ./bin/shfmt
+        language: system
+        files: "\\.sh$"
+        args: [-w]
+      - id: shellcheck
+        name: shellcheck
+        entry: ./bin/shellcheck
+        language: system
+        files: "\\.sh$"
+        args: [--severity=style]
