@@ -15,7 +15,8 @@ This installs:
 - AmpCode config to `~/.config/AGENTS.md`
 - Codex config to `~/.codex/AGENTS.md`
 - Shell hooks for CLI commands (optional)
-- Settings symlink to `~/.claude/settings.json`
+- Settings symlink to `~/.claude/settings.json` (optional)
+- Codex config symlink to `~/.codex/config.toml` (optional)
 - Global gitignore for project specific files
 
 ## Usage
@@ -38,7 +39,8 @@ After installation and shell restart:
 - `commands/` - Slash commands for Claude Code
 - `docs/` - Reference documentation and best practices
 - `shell/` - Shell integration scripts
-- `settings/` - Configuration files
+- `settings/claude/` - Claude Code configuration
+- `settings/codex/` - Codex CLI configuration
 - `AGENTS.tpl.md` - Global AI configuration template
 
 ## Inspiration

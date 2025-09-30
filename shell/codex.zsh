@@ -22,3 +22,5 @@ codex-mcp-dev-remove() {
   claude mcp remove codex-dev
   echo "Development Codex MCP server removed."
 }
+
+alias codex-list='/Users/lachlan/Projects/agent-docs/shell/codex-list.py'

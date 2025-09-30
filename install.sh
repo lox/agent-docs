@@ -51,21 +51,57 @@ log_success "Created CLAUDE.md and AGENTS.md in multiple locations"
 
 # 3. Optional: Install settings
 log_info "\nSettings configuration..."
-SETTINGS_FILE="$HOME/.claude/settings.json"
-REPO_SETTINGS="$SCRIPT_DIR/settings/claude.json"
 
-if [ -L "$SETTINGS_FILE" ] && [ "$(readlink "$SETTINGS_FILE")" = "$REPO_SETTINGS" ]; then
-  echo "Settings already linked"
-elif [ -f "$SETTINGS_FILE" ]; then
-  echo "Existing settings.json found"
-  log_warn "Review $REPO_SETTINGS for recommended settings"
-elif [ -f "$REPO_SETTINGS" ]; then
-  read -p "Link recommended settings? (y/N) " -n 1 -r
-  echo
-  [[ $REPLY =~ ^[Yy]$ ]] && {
-    ln -s "$REPO_SETTINGS" "$SETTINGS_FILE"
-    log_success "Linked settings"
-  }
+# Claude settings
+CLAUDE_SETTINGS_FILE="$HOME/.claude/settings.json"
+REPO_CLAUDE_SETTINGS="$SCRIPT_DIR/settings/claude/settings.json"
+
+if [ -L "$CLAUDE_SETTINGS_FILE" ] && [ "$(readlink "$CLAUDE_SETTINGS_FILE")" = "$REPO_CLAUDE_SETTINGS" ]; then
+  echo "Claude settings already linked"
+elif [ -f "$REPO_CLAUDE_SETTINGS" ]; then
+  if [ -f "$CLAUDE_SETTINGS_FILE" ]; then
+    echo "Existing Claude settings.json found"
+    read -p "Replace with symlink to repo settings? (y/N) " -n 1 -r
+    echo
+    [[ $REPLY =~ ^[Yy]$ ]] && {
+      rm "$CLAUDE_SETTINGS_FILE"
+      ln -s "$REPO_CLAUDE_SETTINGS" "$CLAUDE_SETTINGS_FILE"
+      log_success "Linked Claude settings"
+    }
+  else
+    read -p "Link recommended Claude settings? (y/N) " -n 1 -r
+    echo
+    [[ $REPLY =~ ^[Yy]$ ]] && {
+      ln -s "$REPO_CLAUDE_SETTINGS" "$CLAUDE_SETTINGS_FILE"
+      log_success "Linked Claude settings"
+    }
+  fi
+fi
+
+# Codex config
+CODEX_CONFIG_FILE="$HOME/.codex/config.toml"
+REPO_CODEX_CONFIG="$SCRIPT_DIR/settings/codex/config.toml"
+
+if [ -L "$CODEX_CONFIG_FILE" ] && [ "$(readlink "$CODEX_CONFIG_FILE")" = "$REPO_CODEX_CONFIG" ]; then
+  echo "Codex config already linked"
+elif [ -f "$REPO_CODEX_CONFIG" ]; then
+  if [ -f "$CODEX_CONFIG_FILE" ]; then
+    echo "Existing Codex config.toml found"
+    read -p "Replace with symlink to repo config? (y/N) " -n 1 -r
+    echo
+    [[ $REPLY =~ ^[Yy]$ ]] && {
+      rm "$CODEX_CONFIG_FILE"
+      ln -s "$REPO_CODEX_CONFIG" "$CODEX_CONFIG_FILE"
+      log_success "Linked Codex config"
+    }
+  else
+    read -p "Link recommended Codex config? (y/N) " -n 1 -r
+    echo
+    [[ $REPLY =~ ^[Yy]$ ]] && {
+      ln -s "$REPO_CODEX_CONFIG" "$CODEX_CONFIG_FILE"
+      log_success "Linked Codex config"
+    }
+  fi
 fi
 
 # 4. Install shell hooks

@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "permissions": {
     "allow": [
       "Bash(git:*)",
@@ -34,6 +35,10 @@
       "WebFetch(domain:go.dev)",
       "WebFetch(domain:ziglang.org)"
     ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "npx ccusage statusline"
   },
   "env": {},
   "includeCoAuthoredBy": false,
