@@ -83,7 +83,7 @@ enabled: "true"
 description: |
   This is a long description
   that spans multiple lines.
-  
+
   With paragraphs.
 
 # Folded strings (newlines become spaces)
@@ -178,12 +178,12 @@ database:
 logging:
   level: info
   format: json
-  
+
   # Outputs
   outputs:
     - type: console
       level: debug
-      
+
     - type: file
       path: /var/log/myapp.log
       level: info
@@ -203,10 +203,10 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Run tests
         run: |
           npm install
@@ -225,7 +225,7 @@ services:
       - "80:80"
     volumes:
       - ./html:/usr/share/nginx/html:ro
-    
+
   db:
     image: postgres:15
     environment:
@@ -280,7 +280,7 @@ items:
 name:value
 
 # Bad - trailing spaces
-name: value   
+name: value
 
 # Bad - tabs instead of spaces
 items:

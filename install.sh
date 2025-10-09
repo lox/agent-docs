@@ -141,8 +141,8 @@ if command -v go >/dev/null 2>&1; then
   mkdir -p "$SCRIPT_DIR/dist"
 
   if [ -d "$SCRIPT_DIR/cmd/claude-statusline" ]; then
-    go build -o "$SCRIPT_DIR/dist/claude-statusline" "$SCRIPT_DIR/cmd/claude-statusline" 2>/dev/null && \
-      log_success "Built claude-statusline" || \
+    go build -o "$SCRIPT_DIR/dist/claude-statusline" "$SCRIPT_DIR/cmd/claude-statusline" 2>/dev/null &&
+      log_success "Built claude-statusline" ||
       log_warn "Failed to build claude-statusline"
   fi
 else

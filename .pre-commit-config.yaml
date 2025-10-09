@@ -1,15 +1,57 @@
 repos:
+  # Conventional commit linting
+  - repo: https://github.com/espressif/conventional-precommit-linter
+    rev: v1.10.0
+    hooks:
+      - id: conventional-precommit-linter
+        stages: [commit-msg]
+        args:
+          - --types=feat,fix,chore,refactor,docs
+          - --body-max-line-length=250
+
+  # General file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      - id: check-yaml
+      - id: check-json
+      - id: check-toml
+      - id: end-of-file-fixer
+        exclude: ^bin/
+      - id: trailing-whitespace
+        exclude: ^bin/
+      - id: mixed-line-ending
+        exclude: ^bin/
+
+  # Shell script checks
   - repo: local
     hooks:
-      - id: shfmt
-        name: shfmt
-        entry: ./bin/shfmt
-        language: system
-        files: "\\.sh$"
-        args: [-w]
       - id: shellcheck
         name: shellcheck
-        entry: ./bin/shellcheck
+        entry: shellcheck
         language: system
-        files: "\\.sh$"
-        args: [--severity=style]
+        types: [shell]
+        files: \.(sh|bash)$
+        exclude: ^bin/
+        args: [--severity=warning]
+      - id: shfmt
+        name: shfmt
+        entry: shfmt
+        language: system
+        types: [shell]
+        files: \.(sh|bash)$
+        exclude: ^bin/
+        args: [-w, -i, "2"]
+
+  # Go formatting
+  - repo: local
+    hooks:
+      - id: gofmt
+        name: gofmt
+        entry: gofmt
+        language: system
+        files: \.go$
+        args: [-w, -s]
