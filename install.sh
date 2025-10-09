@@ -135,6 +135,21 @@ for pattern in "/CLAUDE.md" "/AGENTS.md" "/.claude/" "/.codex/"; do
 done
 log_success "Updated global .gitignore"
 
+# 6. Build binaries
+log_info "\nBuilding binaries..."
+if command -v go >/dev/null 2>&1; then
+  mkdir -p "$SCRIPT_DIR/dist"
+
+  if [ -d "$SCRIPT_DIR/cmd/claude-statusline" ]; then
+    go build -o "$SCRIPT_DIR/dist/claude-statusline" "$SCRIPT_DIR/cmd/claude-statusline" 2>/dev/null && \
+      log_success "Built claude-statusline" || \
+      log_warn "Failed to build claude-statusline"
+  fi
+else
+  log_warn "Go not found - skipping binary builds"
+  log_warn "Install Go via Hermit: source bin/activate-hermit && hermit install go"
+fi
+
 # Done
 echo -e "\n${GREEN}✅ Installation complete!${NC}"
 echo -e "\nCommands: ${BLUE}~/.claude/commands/${NC}"

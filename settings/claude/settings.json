@@ -41,7 +41,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "/Users/lachlan/Projects/agent-docs/dist/statusline"
+    "command": "/Users/lachlan/Projects/agent-docs/dist/claude-statusline"
   },
   "alwaysThinkingEnabled": true
 }
