@@ -7,15 +7,15 @@ model = "gpt-5-codex"
 model_reasoning_effort = "high"
 
 # Approval & sandbox policies
-approval_policy = "untrusted"           # "untrusted" | "on-failure" | "on-request" | "never"
-sandbox_mode = "workspace-write"        # "read-only" | "workspace-write" | "danger-full-access"
+approval_policy = "never"           # "untrusted" | "on-failure" | "on-request" | "never"
+sandbox_mode = "danger-full-access"        # "read-only" | "workspace-write" | "danger-full-access"
 
 # Privacy
 disable_response_storage = false        # set true only if you have ZDR enabled
 network_access = true
 
 [tools]
-web_search = false                      # enable when needed
+web_search = true                      # enable when needed
 
 [shell_environment_policy]
 inherit = "all"
