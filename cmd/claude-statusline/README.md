@@ -61,12 +61,7 @@ Since we only read the current session (not aggregate across all sessions), perf
 ## Building
 
 ```bash
-go build -o ../../dist/statusline .
-```
-
-Or use the build script:
-```bash
-./scripts/build-statusline.sh
+go build -o ../../dist/claude-statusline .
 ```
 
 ## Configuration
@@ -77,7 +72,7 @@ Set in `.claude/settings.json`:
 {
   "statusLine": {
     "type": "command",
-    "command": "/path/to/dist/statusline"
+    "command": "/path/to/dist/claude-statusline"
   }
 }
 ```
