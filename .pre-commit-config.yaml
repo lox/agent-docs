@@ -1,4 +1,10 @@
 repos:
+  # Secret detection
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.24.2
+    hooks:
+      - id: gitleaks
+
   # Conventional commit linting
   - repo: https://github.com/espressif/conventional-precommit-linter
     rev: v1.10.0
