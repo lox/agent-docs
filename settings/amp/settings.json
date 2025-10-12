@@ -1,0 +1,10 @@
+{
+  "amp.anthropic.thinking.enabled": true,
+  "amp.git.commit.ampThread.enabled": true,
+  "amp.git.commit.coauthor.enabled": false,
+  "amp.todos.enabled": true,
+  "amp.tools.stopTimeout": 300,
+  "amp.permissions": [
+    { "tool": "*", "action": "allow" }
+  ]
+}

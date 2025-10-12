@@ -13,6 +13,35 @@ log_warn() { echo -e "${YELLOW}$1${NC}"; }
 log_error() { echo -e "${RED}$1${NC}"; }
 log_success() { echo -e "${GREEN}✓ $1${NC}"; }
 
+# Link settings file with user confirmation
+link_settings() {
+  local target_file="$1"
+  local repo_file="$2"
+  local name="$3"
+
+  if [ -L "$target_file" ] && [ "$(readlink "$target_file")" = "$repo_file" ]; then
+    echo "$name already linked"
+  elif [ -f "$repo_file" ]; then
+    if [ -f "$target_file" ]; then
+      echo "Existing $name found"
+      read -p "Replace with symlink to repo? (y/N) " -n 1 -r
+      echo
+      [[ $REPLY =~ ^[Yy]$ ]] && {
+        rm "$target_file"
+        ln -s "$repo_file" "$target_file"
+        log_success "Linked $name"
+      }
+    else
+      read -p "Link recommended $name? (y/N) " -n 1 -r
+      echo
+      [[ $REPLY =~ ^[Yy]$ ]] && {
+        ln -s "$repo_file" "$target_file"
+        log_success "Linked $name"
+      }
+    fi
+  fi
+}
+
 echo -e "${BLUE}Agent Docs Installer\n====================${NC}\n"
 
 # 1. Install slash commands
@@ -52,57 +81,11 @@ log_success "Created CLAUDE.md and AGENTS.md in multiple locations"
 # 3. Optional: Install settings
 log_info "\nSettings configuration..."
 
-# Claude settings
-CLAUDE_SETTINGS_FILE="$HOME/.claude/settings.json"
-REPO_CLAUDE_SETTINGS="$SCRIPT_DIR/settings/claude/settings.json"
+link_settings "$HOME/.claude/settings.json" "$SCRIPT_DIR/settings/claude/settings.json" "Claude settings"
+link_settings "$HOME/.codex/config.toml" "$SCRIPT_DIR/settings/codex/config.toml" "Codex config"
 
-if [ -L "$CLAUDE_SETTINGS_FILE" ] && [ "$(readlink "$CLAUDE_SETTINGS_FILE")" = "$REPO_CLAUDE_SETTINGS" ]; then
-  echo "Claude settings already linked"
-elif [ -f "$REPO_CLAUDE_SETTINGS" ]; then
-  if [ -f "$CLAUDE_SETTINGS_FILE" ]; then
-    echo "Existing Claude settings.json found"
-    read -p "Replace with symlink to repo settings? (y/N) " -n 1 -r
-    echo
-    [[ $REPLY =~ ^[Yy]$ ]] && {
-      rm "$CLAUDE_SETTINGS_FILE"
-      ln -s "$REPO_CLAUDE_SETTINGS" "$CLAUDE_SETTINGS_FILE"
-      log_success "Linked Claude settings"
-    }
-  else
-    read -p "Link recommended Claude settings? (y/N) " -n 1 -r
-    echo
-    [[ $REPLY =~ ^[Yy]$ ]] && {
-      ln -s "$REPO_CLAUDE_SETTINGS" "$CLAUDE_SETTINGS_FILE"
-      log_success "Linked Claude settings"
-    }
-  fi
-fi
-
-# Codex config
-CODEX_CONFIG_FILE="$HOME/.codex/config.toml"
-REPO_CODEX_CONFIG="$SCRIPT_DIR/settings/codex/config.toml"
-
-if [ -L "$CODEX_CONFIG_FILE" ] && [ "$(readlink "$CODEX_CONFIG_FILE")" = "$REPO_CODEX_CONFIG" ]; then
-  echo "Codex config already linked"
-elif [ -f "$REPO_CODEX_CONFIG" ]; then
-  if [ -f "$CODEX_CONFIG_FILE" ]; then
-    echo "Existing Codex config.toml found"
-    read -p "Replace with symlink to repo config? (y/N) " -n 1 -r
-    echo
-    [[ $REPLY =~ ^[Yy]$ ]] && {
-      rm "$CODEX_CONFIG_FILE"
-      ln -s "$REPO_CODEX_CONFIG" "$CODEX_CONFIG_FILE"
-      log_success "Linked Codex config"
-    }
-  else
-    read -p "Link recommended Codex config? (y/N) " -n 1 -r
-    echo
-    [[ $REPLY =~ ^[Yy]$ ]] && {
-      ln -s "$REPO_CODEX_CONFIG" "$CODEX_CONFIG_FILE"
-      log_success "Linked Codex config"
-    }
-  fi
-fi
+mkdir -p "$HOME/.config/amp"
+link_settings "$HOME/.config/amp/settings.json" "$SCRIPT_DIR/settings/amp/settings.json" "Amp settings"
 
 # 4. Install shell hooks
 log_info "\nSetting up shell hooks..."
@@ -130,7 +113,7 @@ touch "$GLOBAL_GITIGNORE"
 git config --global core.excludesfile "$GLOBAL_GITIGNORE" 2>/dev/null || log_warn "Warning: Could not configure git global excludesfile"
 
 # Add patterns if they don't exist
-for pattern in "/CLAUDE.md" "/AGENTS.md" "/.claude/" "/.codex/"; do
+for pattern in "/CLAUDE.md" "/AGENTS.md" "/.claude/" "/.codex/" "/.amp/"; do
   grep -q "^${pattern}$" "$GLOBAL_GITIGNORE" 2>/dev/null || echo "$pattern" >>"$GLOBAL_GITIGNORE"
 done
 log_success "Updated global .gitignore"
