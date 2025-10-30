@@ -11,6 +11,9 @@ claude() {
   done
 
   if claude_bin=$(command -v claude 2>/dev/null); then
+    if [[ "$claude_bin" == *" is "* ]]; then
+      claude_bin="${claude_bin#* is }"
+    fi
     if [[ "$claude_bin" == */* && -x "$claude_bin" ]]; then
       "$claude_bin" "$@"
       return
