@@ -1,12 +1,12 @@
 #!/bin/bash
 set -euo pipefail
 
-GREEN='\033[0;32m' YELLOW='\033[1;33m' BLUE='\033[0;34m' RED='\033[0;31m' NC='\033[0m'
+green='\033[0;32m' yellow='\033[1;33m' blue='\033[0;34m' red='\033[0;31m' nc='\033[0m'
 
-log_info() { echo -e "${GREEN}$1${NC}"; }
-log_warn() { echo -e "${YELLOW}$1${NC}"; }
-log_error() { echo -e "${RED}$1${NC}"; }
-log_success() { echo -e "${GREEN}✓ $1${NC}"; }
+log_info() { echo -e "${green}$1${nc}"; }
+log_warn() { echo -e "${yellow}$1${nc}"; }
+log_error() { echo -e "${red}$1${nc}"; }
+log_success() { echo -e "${green}✓ $1${nc}"; }
 
 require_command() {
   if ! command -v "$1" >/dev/null 2>&1; then
@@ -39,7 +39,7 @@ install_agent() {
   fi
 }
 
-echo -e "${BLUE}Agent CLI Installer\n===================${NC}\n"
+echo -e "${blue}Agent CLI Installer\n===================${nc}\n"
 
 require_command npm
 
