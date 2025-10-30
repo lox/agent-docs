@@ -10,8 +10,7 @@ claude() {
     fi
   done
 
-  claude_bin=$(type -p claude 2>/dev/null || true)
-  if [[ -n "$claude_bin" ]]; then
+  if claude_bin=$(command -v claude 2>/dev/null); then
     "$claude_bin" "$@"
     return
   fi

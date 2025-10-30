@@ -15,9 +15,12 @@ cdx() {
     fi
   else
     local codex_bin
-    codex_bin=$(type -p codex 2>/dev/null || true)
-    if [[ -z "$codex_bin" && -x "$CODEX_PREFIX/bin/codex" ]]; then
+    if [[ -x "$CODEX_PREFIX/bin/codex" ]]; then
       codex_bin="$CODEX_PREFIX/bin/codex"
+    elif codex_bin=$(command -v codex 2>/dev/null); then
+      :
+    else
+      codex_bin=""
     fi
     if [[ -z "$codex_bin" ]]; then
       echo "Codex CLI not found. Run install-agents.sh first." >&2
