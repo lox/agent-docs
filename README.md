@@ -27,7 +27,7 @@ Install the Claude and Codex CLIs with:
 ./install-agents.sh
 ```
 
-The script uses npm under the hood and installs into `~/.claude/local` and `~/.codex/local` so no sudo is required. Override the packages or prefixes with `CLAUDE_NPM_PACKAGE`, `CODEX_NPM_PACKAGE`, `CLAUDE_PREFIX`, or `CODEX_PREFIX` if needed.
+The script installs `@anthropic-ai/claude-code` and `@openai/codex` via npm into `~/.claude/local` and `~/.codex/local`, so no sudo is required. Override the packages or prefixes with `CLAUDE_NPM_PACKAGE`, `CODEX_NPM_PACKAGE`, `CLAUDE_PREFIX`, or `CODEX_PREFIX` if needed.
 
 ## Usage
 

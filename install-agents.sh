@@ -43,7 +43,7 @@ echo -e "${BLUE}Agent CLI Installer\n===================${NC}\n"
 
 require_command npm
 
-CLAUDE_NPM_PACKAGE="${CLAUDE_NPM_PACKAGE:-@anthropic-ai/claude-cli@latest}"
+CLAUDE_NPM_PACKAGE="${CLAUDE_NPM_PACKAGE:-@anthropic-ai/claude-code@latest}"
 CODEX_NPM_PACKAGE="${CODEX_NPM_PACKAGE:-@openai/codex@latest}"
 
 CLAUDE_PREFIX="${CLAUDE_PREFIX:-$HOME/.claude/local}"
