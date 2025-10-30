@@ -11,8 +11,10 @@ claude() {
   done
 
   if claude_bin=$(command -v claude 2>/dev/null); then
-    "$claude_bin" "$@"
-    return
+    if [[ "$claude_bin" == */* && -x "$claude_bin" ]]; then
+      "$claude_bin" "$@"
+      return
+    fi
   fi
 
   echo "Claude CLI not found. Run install-agents.sh first." >&2

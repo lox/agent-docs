@@ -18,7 +18,9 @@ cdx() {
     if [[ -x "$CODEX_PREFIX/bin/codex" ]]; then
       codex_bin="$CODEX_PREFIX/bin/codex"
     elif codex_bin=$(command -v codex 2>/dev/null); then
-      :
+      if [[ "$codex_bin" != */* || ! -x "$codex_bin" ]]; then
+        codex_bin=""
+      fi
     else
       codex_bin=""
     fi
