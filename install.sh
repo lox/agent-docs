@@ -19,6 +19,8 @@ link_settings() {
   local repo_file="$2"
   local name="$3"
 
+  mkdir -p "$(dirname "$target_file")"
+
   if [ -L "$target_file" ] && [ "$(readlink "$target_file")" = "$repo_file" ]; then
     echo "$name already linked"
   elif [ -f "$repo_file" ]; then
@@ -48,6 +50,8 @@ echo -e "${BLUE}Agent Docs Installer\n====================${NC}\n"
 log_info "Installing slash commands..."
 CLAUDE_COMMANDS_DIR="$HOME/.claude/commands"
 
+mkdir -p "$(dirname "$CLAUDE_COMMANDS_DIR")"
+
 if [ -d "$SCRIPT_DIR/commands" ]; then
   # Remove existing commands directory if it exists
   [ -d "$CLAUDE_COMMANDS_DIR" ] && rm -rf "$CLAUDE_COMMANDS_DIR"
@@ -65,6 +69,7 @@ fi
 log_info "\nSetting up configuration files..."
 mkdir -p "$HOME/.config"
 mkdir -p "$HOME/.codex"
+mkdir -p "$HOME/.claude"
 
 [ -f "$SCRIPT_DIR/AGENTS.tpl.md" ] || {
   log_error "Error: AGENTS.tpl.md not found"
@@ -124,9 +129,11 @@ if command -v go >/dev/null 2>&1; then
   mkdir -p "$SCRIPT_DIR/dist"
 
   if [ -d "$SCRIPT_DIR/cmd/claude-statusline" ]; then
-    go build -o "$SCRIPT_DIR/dist/claude-statusline" "$SCRIPT_DIR/cmd/claude-statusline" 2>/dev/null &&
-      log_success "Built claude-statusline" ||
+    if go build -o "$SCRIPT_DIR/dist/claude-statusline" "$SCRIPT_DIR/cmd/claude-statusline" 2>/dev/null; then
+      log_success "Built claude-statusline"
+    else
       log_warn "Failed to build claude-statusline"
+    fi
   fi
 else
   log_warn "Go not found - skipping binary builds"
@@ -144,3 +151,4 @@ echo -e "\nShell commands (after restart or source):"
 echo -e "  ${BLUE}claude${NC} - Run Claude Code CLI"
 echo -e "  ${BLUE}cdx${NC} - Run Codex CLI"
 echo -e "  ${BLUE}agent-help${NC} - Show all agent commands"
+echo -e "\nInstall CLI agents with: ${BLUE}$SCRIPT_DIR/install-agents.sh${NC}"
